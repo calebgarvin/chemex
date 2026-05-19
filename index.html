@@ -4,126 +4,313 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <title>Chemex Assistant</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,900;1,9..144,500&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  :root { --accent: #c9622a; }
-  html, body { background: #120e08; }
+  :root {
+    --sage: #6f8f6a;
+    --sage-deep: #4f6b4c;
+    --blush: #e9a6a0;
+    --gold: #e0a548;
+    --ink: #3c4a3a;
+    --cream: #fbf6ec;
+    --paper: #fffdf7;
+  }
+  html, body { background: #eef3e6; }
   body {
     min-height: 100vh;
-    background: radial-gradient(circle at 20% 10%, #2c2419 0%, #1a150d 55%, #120e08 100%);
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 0%, #fdeecb 0%, rgba(253,238,203,0) 60%),
+      radial-gradient(ellipse 70% 60% at 80% 100%, #d8e7d4 0%, rgba(216,231,212,0) 55%),
+      linear-gradient(180deg, #eaf2e2 0%, #eef3e6 40%, #e6efdd 100%);
     display: flex; justify-content: center; align-items: flex-start;
-    padding: 32px 16px calc(32px + env(safe-area-inset-bottom));
-    font-family: 'DM Mono', monospace;
+    padding: 30px 16px calc(40px + env(safe-area-inset-bottom));
+    font-family: 'Cormorant Garamond', serif;
+    position: relative; overflow-x: hidden;
   }
+
+  .ambient { position: fixed; pointer-events: none; opacity: .5; z-index: 0; }
+  .a1 { top: 4%; left: -20px; width: 150px; animation: sway 9s ease-in-out infinite; }
+  .a2 { bottom: 2%; right: -30px; width: 190px; animation: sway 11s ease-in-out infinite reverse; }
+  .a3 { top: 40%; right: 8px; width: 70px; opacity: .35; animation: float 7s ease-in-out infinite; }
+  @keyframes sway { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)} }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+
   .card {
-    width: 100%; max-width: 460px; background: #f5efe1;
-    border-radius: 4px; padding: 36px 28px 30px;
-    box-shadow: 0 24px 60px rgba(0,0,0,.5); border: 1px solid #e2d6bd;
+    position: relative; z-index: 1;
+    width: 100%; max-width: 470px;
+    background: var(--paper);
+    border-radius: 20px;
+    padding: 34px 28px 30px;
+    box-shadow: 0 2px 0 rgba(255,255,255,.9) inset, 0 20px 50px -12px rgba(95,107,76,.35);
+    border: 1px solid #ece3cf;
+    animation: rise .9s cubic-bezier(.2,.8,.2,1) both;
   }
-  header { text-align: center; margin-bottom: 30px; }
-  .kicker { font-size: 11px; letter-spacing: 4px; color: #a8916b; margin-bottom: 8px; }
-  h1 { font-family: 'Fraunces', serif; font-size: 40px; font-weight: 900; color: #231a0f; line-height: 1; }
-  .sub { font-size: 12px; color: #8a7858; margin-top: 10px; letter-spacing: 1px; }
-  .section { margin-bottom: 26px; }
-  .secLabel { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #9a8763; margin-bottom: 12px; }
-  .grRow { display: flex; gap: 8px; }
+  @keyframes rise { from { opacity:0; transform: translateY(22px) } to { opacity:1; transform:none } }
+  .corner { position: absolute; width: 78px; height: 78px; opacity: .9; pointer-events: none; }
+  .c-tl { top: -6px; left: -6px; }
+  .c-br { bottom: -6px; right: -6px; transform: rotate(180deg); }
+
+  header { position: relative; text-align: center; margin-bottom: 26px; }
+  .bird { width: 58px; margin: 0 auto 6px; display: block; animation: float 6s ease-in-out infinite; }
+  .kicker {
+    font-family: 'Fraunces', serif; font-size: 10px; letter-spacing: 5px;
+    color: var(--sage); margin-bottom: 6px; text-transform: uppercase;
+  }
+  h1 {
+    font-family: 'Fraunces', serif; font-weight: 900; font-size: 44px;
+    color: var(--ink); line-height: .95; letter-spacing: -.5px;
+  }
+  h1 .em { font-style: italic; font-weight: 500; color: var(--sage); }
+  .sub {
+    font-size: 16px; color: #8a9a7e; margin-top: 8px; font-style: italic;
+    letter-spacing: .3px;
+  }
+  .rule { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 14px auto 0; }
+  .rule span { height: 1px; width: 46px; background: linear-gradient(90deg, transparent, #cdbf9e); }
+  .rule span:last-child { background: linear-gradient(90deg, #cdbf9e, transparent); }
+  .rule svg { width: 14px; opacity: .7; }
+
+  .helpBtn {
+    position: absolute; top: 4px; right: 0;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: #f3f7ee; border: 1px solid #d8e3cf; color: var(--sage);
+    cursor: pointer; transition: all .25s ease; display: flex;
+    align-items: center; justify-content: center;
+  }
+  .helpBtn svg { width: 20px; height: 20px; }
+  .helpBtn:hover { background: var(--sage); color: #fff; transform: rotate(8deg) scale(1.05); }
+
+  .section { margin-bottom: 24px; position: relative; }
+  .secLabel {
+    font-family: 'Fraunces', serif; font-size: 11px; letter-spacing: 3px;
+    text-transform: uppercase; color: #a39472; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .secLabel::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+
+  .grRow { display: flex; gap: 9px; }
   .grBtn {
-    flex: 1; background: #ede4d0; border: 1px solid #ddd0b4; border-radius: 3px;
-    padding: 12px 8px; cursor: pointer; text-align: center;
-    font-family: 'DM Mono', monospace; transition: all .25s ease; color: #231a0f;
+    flex: 1; background: #f5f8f0; border: 1.5px solid #dde7d3; border-radius: 14px;
+    padding: 14px 8px; cursor: pointer; text-align: center;
+    font-family: 'Cormorant Garamond', serif; transition: all .28s cubic-bezier(.2,.8,.2,1);
+    color: var(--ink);
   }
-  .grBtn:hover { transform: translateY(-2px); }
-  .grBtn.active { background: #231a0f; border-color: #231a0f; color: #f5efe1; }
-  .grName { font-size: 11px; font-weight: 500; margin-bottom: 6px; }
-  .grSet { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 900; color: var(--accent); }
-  .grNote { font-size: 9px; opacity: .7; margin-top: 5px; }
-  input[type=range] { width: 100%; accent-color: #c9622a; cursor: pointer; height: 28px; }
-  .statRow { display: flex; gap: 8px; margin-top: 16px; }
-  .stat { flex: 1; background: #ede4d0; border-radius: 3px; padding: 10px 6px; text-align: center; }
-  .statBig { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 600; color: #231a0f; }
-  .statSmall { font-size: 9px; color: #9a8763; text-transform: uppercase; letter-spacing: 1px; margin-top: 3px; }
-  .timerBox { background: #231a0f; border-radius: 4px; padding: 26px 20px; text-align: center; }
-  .bigTime { font-family: 'Fraunces', serif; font-size: 64px; font-weight: 900; color: #f5efe1; line-height: 1; }
-  .progTrack { height: 4px; background: #3d3120; border-radius: 2px; margin: 20px 0; overflow: hidden; }
-  .progFill { height: 100%; background: var(--accent); transition: width 1s linear; width: 0%; }
+  .grBtn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px -8px rgba(111,143,106,.4); }
+  .grBtn.active {
+    background: linear-gradient(165deg, #7a9a72, #5e7d57);
+    border-color: #5e7d57; color: #fff;
+    box-shadow: 0 10px 22px -8px rgba(94,125,87,.6);
+  }
+  .grName { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .grSet { font-family: 'Fraunces', serif; font-size: 30px; font-weight: 900; color: var(--gold); line-height: 1; }
+  .grBtn.active .grSet { color: #ffe0a8; }
+  .grNote { font-size: 12px; opacity: .75; margin-top: 5px; font-style: italic; }
+
+  .doseLabel {
+    font-family: 'Fraunces', serif; font-size: 14px; color: var(--ink);
+    margin-bottom: 12px; text-align: center; font-weight: 500;
+  }
+  .doseLabel b { color: var(--sage); }
+  input[type=range] {
+    -webkit-appearance: none; appearance: none; width: 100%;
+    height: 8px; border-radius: 8px; cursor: pointer;
+    background: linear-gradient(90deg, var(--sage) 0%, #b8d0ad 100%);
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 26px; height: 26px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff, var(--gold));
+    border: 2px solid #fff; box-shadow: 0 3px 8px rgba(224,165,72,.5); cursor: pointer;
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff, var(--gold));
+    border: 2px solid #fff; box-shadow: 0 3px 8px rgba(224,165,72,.5); cursor: pointer;
+  }
+  .statRow { display: flex; gap: 9px; margin-top: 18px; }
+  .stat {
+    flex: 1; background: #f7f9f2; border: 1px solid #e6eede; border-radius: 12px;
+    padding: 12px 6px; text-align: center;
+  }
+  .statBig { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 600; color: var(--ink); }
+  .statSmall {
+    font-size: 11px; color: #a39472; text-transform: uppercase;
+    letter-spacing: 1.5px; margin-top: 3px; font-family: 'Fraunces', serif;
+  }
+
+  .timerBox {
+    background:
+      radial-gradient(ellipse at 50% 0%, #fdf0d3 0%, rgba(253,240,211,0) 70%),
+      linear-gradient(165deg, #f3f7ee, #e9f1e3);
+    border: 1.5px solid #dde7d3; border-radius: 18px;
+    padding: 26px 20px; text-align: center; position: relative; overflow: hidden;
+  }
+  .timerBox .sun {
+    position: absolute; top: -38px; left: 50%; transform: translateX(-50%);
+    width: 90px; opacity: .55;
+  }
+  .bigTime {
+    font-family: 'Fraunces', serif; font-size: 66px; font-weight: 900;
+    color: var(--ink); line-height: 1; position: relative;
+  }
+  .progTrack { height: 7px; background: #e0e9d8; border-radius: 7px; margin: 18px 0; overflow: hidden; }
+  .progFill {
+    height: 100%; width: 0%; border-radius: 7px;
+    background: linear-gradient(90deg, var(--sage), var(--gold));
+    transition: width 1s linear;
+  }
   .btnRow { display: flex; gap: 10px; }
   .ctrlBtn {
-    flex: 2; background: var(--accent); color: #fff; border: none; border-radius: 3px;
-    padding: 15px; font-size: 15px; font-weight: 500; cursor: pointer; font-family: 'DM Mono', monospace;
+    flex: 2; border: none; border-radius: 12px; padding: 16px;
+    font-size: 17px; font-weight: 600; cursor: pointer;
+    font-family: 'Fraunces', serif; color: #fff;
+    background: linear-gradient(165deg, #7a9a72, #5e7d57);
+    box-shadow: 0 8px 18px -6px rgba(94,125,87,.6); transition: transform .15s ease;
   }
-  .ctrlBtn.pause { background: #7a6647; }
+  .ctrlBtn:active { transform: scale(.97); }
+  .ctrlBtn.pause { background: linear-gradient(165deg, #e8b765, #d49a3f); box-shadow: 0 8px 18px -6px rgba(212,154,63,.6); }
   .resetBtn {
-    flex: 1; background: transparent; color: #a8916b; border: 1px solid #4a3d28;
-    border-radius: 3px; padding: 15px; font-size: 15px; cursor: pointer; font-family: 'DM Mono', monospace;
+    flex: 1; background: #f3f7ee; color: var(--sage); border: 1.5px solid #d8e3cf;
+    border-radius: 12px; padding: 16px; font-size: 16px; cursor: pointer;
+    font-family: 'Fraunces', serif;
   }
-  .phaseRow {
-    display: flex; align-items: center; gap: 12px; padding: 12px;
-    border-radius: 3px; margin-bottom: 4px; color: #231a0f;
-    transition: background .4s ease, opacity .4s ease;
-  }
-  .phaseRow.active { background: #231a0f; color: #f5efe1; }
-  .phaseRow.done { opacity: .4; }
-  .phaseDot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; background: #d8cdb8; }
-  .phaseRow.active .phaseDot { background: var(--accent); animation: pulse 1.4s infinite; }
-  .phaseRow.done .phaseDot { background: #9a8c78; }
-  .phaseName { flex: 1; font-size: 13px; font-weight: 500; }
-  .phaseTime { font-size: 12px; color: #9a8763; width: 44px; }
-  .phaseRow.active .phaseTime { color: #c9b78f; }
-  .phaseTarget { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 600; width: 60px; text-align: right; }
-  .footnote { font-size: 10px; color: #a8916b; margin-top: 14px; line-height: 1.6; text-align: center; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.45} }
 
-  header { position: relative; }
-  .helpBtn {
-    position: absolute; top: -8px; right: -6px;
-    width: 30px; height: 30px; border-radius: 50%;
-    background: #ede4d0; border: 1px solid #ddd0b4; color: #8a7858;
-    font-family: 'Fraunces', serif; font-size: 16px; font-weight: 900;
-    cursor: pointer; transition: all .2s ease; line-height: 1;
+  .phaseRow {
+    display: flex; align-items: center; gap: 13px; padding: 13px 14px;
+    border-radius: 12px; margin-bottom: 5px; color: var(--ink);
+    transition: background .4s ease, opacity .4s ease, transform .3s ease;
   }
-  .helpBtn:hover { background: #231a0f; color: #f5efe1; border-color: #231a0f; }
+  .phaseRow.active {
+    background: linear-gradient(165deg, #7a9a72, #5e7d57); color: #fff;
+    transform: translateX(3px);
+  }
+  .phaseRow.done { opacity: .42; }
+  .phaseDot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; background: #cdddc4; }
+  .phaseRow.active .phaseDot { background: #ffe0a8; animation: pulse 1.4s infinite; }
+  .phaseRow.done .phaseDot { background: var(--sage); }
+  .phaseName { flex: 1; font-size: 17px; font-weight: 600; }
+  .phaseTime { font-size: 14px; color: #a39472; width: 46px; font-family: 'Fraunces', serif; }
+  .phaseRow.active .phaseTime { color: #ffe9c4; }
+  .phaseTarget { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 600; width: 64px; text-align: right; }
+  .footnote {
+    font-size: 13px; color: #a39472; margin-top: 14px; line-height: 1.6;
+    text-align: center; font-style: italic;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
   .overlay {
-    position: fixed; inset: 0; background: rgba(18,14,8,.78);
+    position: fixed; inset: 0; background: rgba(60,74,58,.55);
     display: none; align-items: center; justify-content: center;
-    padding: 24px; z-index: 50; backdrop-filter: blur(3px);
+    padding: 22px; z-index: 50; backdrop-filter: blur(4px);
   }
-  .overlay.show { display: flex; }
+  .overlay.show { display: flex; animation: fade .3s ease; }
+  @keyframes fade { from {opacity:0} to {opacity:1} }
   .guide {
-    background: #f5efe1; border-radius: 4px; max-width: 420px; width: 100%;
-    max-height: 86vh; overflow-y: auto; padding: 30px 26px;
-    border: 1px solid #e2d6bd; box-shadow: 0 24px 60px rgba(0,0,0,.6);
+    background: var(--paper); border-radius: 20px; max-width: 430px; width: 100%;
+    max-height: 86vh; overflow-y: auto; padding: 32px 28px;
+    border: 1px solid #ece3cf; box-shadow: 0 24px 60px rgba(60,74,58,.4);
+    position: relative;
   }
-  .guideTitle { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 900; color: #231a0f; margin-bottom: 4px; }
-  .guideSub { font-size: 11px; color: #9a8763; letter-spacing: 1px; margin-bottom: 22px; }
-  .step { display: flex; gap: 14px; margin-bottom: 18px; }
+  .guide .gbird { width: 50px; display: block; margin: 0 auto 8px; }
+  .guideTitle {
+    font-family: 'Fraunces', serif; font-size: 30px; font-weight: 900;
+    color: var(--ink); text-align: center; line-height: 1;
+  }
+  .guideTitle .em { font-style: italic; font-weight: 500; color: var(--sage); }
+  .guideSub {
+    font-size: 13px; color: #a39472; letter-spacing: 2px; margin-bottom: 22px;
+    text-align: center; text-transform: uppercase; font-family: 'Fraunces', serif;
+  }
+  .step { display: flex; gap: 15px; margin-bottom: 17px; }
   .stepNum {
-    flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
-    background: var(--accent); color: #fff; font-family: 'Fraunces', serif;
-    font-weight: 900; font-size: 14px; display: flex; align-items: center;
-    justify-content: center; line-height: 1;
+    flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%;
+    background: linear-gradient(165deg, #e8b765, #d49a3f); color: #fff;
+    font-family: 'Fraunces', serif; font-weight: 900; font-size: 15px;
+    display: flex; align-items: center; justify-content: center; line-height: 1;
   }
-  .stepText { font-size: 13px; line-height: 1.65; color: #463a26; padding-top: 3px; }
-  .stepText b { color: #231a0f; }
+  .stepText { font-size: 16px; line-height: 1.6; color: #51604d; padding-top: 4px; }
+  .stepText b { color: var(--ink); font-weight: 600; }
   .closeBtn {
-    width: 100%; margin-top: 8px; background: #231a0f; color: #f5efe1;
-    border: none; border-radius: 3px; padding: 14px; font-size: 14px;
-    cursor: pointer; font-family: 'DM Mono', monospace;
+    width: 100%; margin-top: 10px; color: #fff; border: none; border-radius: 12px;
+    padding: 15px; font-size: 16px; cursor: pointer; font-family: 'Fraunces', serif;
+    font-weight: 600; background: linear-gradient(165deg, #7a9a72, #5e7d57);
   }
 </style>
 </head>
 <body>
+
+<svg class="ambient a1" viewBox="0 0 120 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M60 200 C60 140 60 80 58 20" stroke="#8aa97f" stroke-width="3" stroke-linecap="round"/>
+  <g fill="#9cc18f">
+    <ellipse cx="40" cy="60" rx="22" ry="9" transform="rotate(-28 40 60)"/>
+    <ellipse cx="80" cy="85" rx="22" ry="9" transform="rotate(28 80 85)"/>
+    <ellipse cx="38" cy="110" rx="22" ry="9" transform="rotate(-28 38 110)"/>
+    <ellipse cx="82" cy="135" rx="22" ry="9" transform="rotate(28 82 135)"/>
+  </g>
+  <circle cx="58" cy="20" r="9" fill="#e9a6a0"/><circle cx="58" cy="20" r="3.5" fill="#e0a548"/>
+</svg>
+<svg class="ambient a2" viewBox="0 0 140 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M70 220 C70 160 72 90 70 30" stroke="#7fa276" stroke-width="3.5" stroke-linecap="round"/>
+  <g fill="#a9cc9c">
+    <path d="M70 70 C40 55 25 70 30 95 C58 95 70 88 70 70Z"/>
+    <path d="M70 110 C100 95 116 110 110 135 C82 135 70 128 70 110Z"/>
+    <path d="M70 150 C42 138 28 152 33 175 C60 175 70 168 70 150Z"/>
+  </g>
+  <g transform="translate(56 14)">
+    <circle cx="14" cy="14" r="11" fill="#f0b8b2"/>
+    <circle cx="14" cy="14" r="4" fill="#e0a548"/>
+  </g>
+</svg>
+<svg class="ambient a3" viewBox="0 0 60 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M30 80 L30 30" stroke="#8aa97f" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="30" cy="22" r="8" fill="#f0b8b2"/>
+  <circle cx="22" cy="30" r="7" fill="#f3c5c0"/>
+  <circle cx="38" cy="30" r="7" fill="#f3c5c0"/>
+  <circle cx="30" cy="27" r="4" fill="#e0a548"/>
+</svg>
+
 <div class="card">
+  <svg class="corner c-tl" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M6 6 C30 14 50 30 64 60" stroke="#9cc18f" stroke-width="2.5" stroke-linecap="round"/>
+    <ellipse cx="24" cy="20" rx="11" ry="5" transform="rotate(35 24 20)" fill="#b6d4aa"/>
+    <ellipse cx="42" cy="34" rx="11" ry="5" transform="rotate(35 42 34)" fill="#b6d4aa"/>
+    <ellipse cx="56" cy="50" rx="10" ry="4.5" transform="rotate(35 56 50)" fill="#b6d4aa"/>
+    <circle cx="14" cy="12" r="5.5" fill="#e9a6a0"/><circle cx="14" cy="12" r="2" fill="#e0a548"/>
+  </svg>
+  <svg class="corner c-br" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M6 6 C30 14 50 30 64 60" stroke="#9cc18f" stroke-width="2.5" stroke-linecap="round"/>
+    <ellipse cx="24" cy="20" rx="11" ry="5" transform="rotate(35 24 20)" fill="#b6d4aa"/>
+    <ellipse cx="42" cy="34" rx="11" ry="5" transform="rotate(35 42 34)" fill="#b6d4aa"/>
+    <circle cx="14" cy="12" r="5.5" fill="#e9a6a0"/><circle cx="14" cy="12" r="2" fill="#e0a548"/>
+  </svg>
+
   <header>
-    <button class="helpBtn" id="helpBtn" aria-label="How to brew">?</button>
-    <div class="kicker">POUR-OVER PROTOCOL</div>
-    <h1>Chemex Assistant</h1>
-    <div class="sub">Caleb's calibrated brew bench · 1:16</div>
+    <button class="helpBtn" id="helpBtn" aria-label="How to brew">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 1 1 5 2.3c-.9.8-1.6 1.2-1.6 2.7"/><line x1="12" y1="17.5" x2="12" y2="17.5"/></svg>
+    </button>
+
+    <svg class="bird" viewBox="0 0 80 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M22 44 C18 30 28 18 42 18 C52 18 58 24 60 32 C68 30 74 34 76 40 C70 42 64 42 60 41 C58 52 48 58 38 56 C42 50 42 46 40 42 C34 50 26 50 22 44Z" fill="#7fa276"/>
+      <path d="M40 42 C44 48 52 50 60 41" stroke="#5e7d57" stroke-width="1.5" fill="none"/>
+      <circle cx="50" cy="29" r="2.6" fill="#3c4a3a"/>
+      <path d="M60 32 L72 28" stroke="#e0a548" stroke-width="3" stroke-linecap="round"/>
+      <path d="M28 56 L24 66 M36 57 L34 68" stroke="#8a7a52" stroke-width="2" stroke-linecap="round"/>
+      <path d="M20 18 C24 22 24 26 22 30" stroke="#9cc18f" stroke-width="2" stroke-linecap="round" fill="none"/>
+      <circle cx="18" cy="15" r="3.5" fill="#e9a6a0"/>
+    </svg>
+    <div class="kicker">A Gentle Morning Ritual</div>
+    <h1>Chemex <span class="em">Assistant</span></h1>
+    <div class="sub">brewed slow, with love &#183; 1&#8202;:&#8202;16</div>
+    <div class="rule">
+      <span></span>
+      <svg viewBox="0 0 24 24" fill="#9cc18f"><path d="M12 2c2 4 2 7 0 9-2-2-2-5 0-9Zm0 20c-2-4-2-7 0-9 2 2 2 5 0 9ZM2 12c4-2 7-2 9 0-2 2-5 2-9 0Zm20 0c-4 2-7 2-9 0 2-2 5-2 9 0Z"/></svg>
+      <span></span>
+    </div>
   </header>
 
   <div class="section">
@@ -132,77 +319,76 @@
   </div>
 
   <div class="section">
-    <div class="secLabel" id="doseLabel"></div>
+    <div class="doseLabel" id="doseLabel"></div>
     <input type="range" id="waterSlider" min="200" max="950" step="10" />
     <div class="statRow" id="statRow"></div>
   </div>
 
   <div class="section">
     <div class="timerBox">
+      <svg class="sun" viewBox="0 0 100 60"><g stroke="#e0a548" stroke-width="2.5" stroke-linecap="round"><line x1="50" y1="6" x2="50" y2="0"/><line x1="30" y1="12" x2="27" y2="6"/><line x1="70" y1="12" x2="73" y2="6"/><line x1="18" y1="28" x2="11" y2="25"/><line x1="82" y1="28" x2="89" y2="25"/></g><path d="M22 56 A28 28 0 0 1 78 56Z" fill="#fbd989"/></svg>
       <div class="bigTime" id="bigTime">0:00</div>
       <div class="progTrack"><div class="progFill" id="progFill"></div></div>
       <div class="btnRow">
-        <button class="ctrlBtn" id="ctrlBtn">Start brew</button>
+        <button class="ctrlBtn" id="ctrlBtn">Begin brewing</button>
         <button class="resetBtn" id="resetBtn">Reset</button>
       </div>
     </div>
   </div>
 
   <div class="section">
-    <div class="secLabel">Pour schedule</div>
+    <div class="secLabel">Pour Schedule</div>
     <div id="schedule"></div>
-    <div class="footnote">Bloom 2:1 · three pours on ~45s cadence · target drawdown 3:30–5:00</div>
+    <div class="footnote">a gentle bloom, then three slow pours &#183; let it drift down 3:30&#8211;5:00</div>
   </div>
 </div>
 
 <div class="overlay" id="overlay">
   <div class="guide">
-    <div class="guideTitle">How to Pour Over</div>
-    <div class="guideSub">FIRST TIME? START HERE.</div>
+    <svg class="gbird" viewBox="0 0 80 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M22 44 C18 30 28 18 42 18 C52 18 58 24 60 32 C68 30 74 34 76 40 C70 42 64 42 60 41 C58 52 48 58 38 56 C42 50 42 46 40 42 C34 50 26 50 22 44Z" fill="#7fa276"/>
+      <circle cx="50" cy="29" r="2.6" fill="#3c4a3a"/>
+      <path d="M60 32 L72 28" stroke="#e0a548" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <div class="guideTitle">How to <span class="em">Pour Over</span></div>
+    <div class="guideSub">first time? start here</div>
 
     <div class="step"><div class="stepNum">1</div><div class="stepText">
-      Put a <b>paper filter</b> in the Chemex. Pour hot water through it to rinse, then tip that water out. This washes away the papery taste and warms the glass.
+      Put a <b>paper filter</b> in the Chemex. Pour hot water through it to rinse, then tip that water out. This rinses away any papery taste and warms the glass.
     </div></div>
-
     <div class="step"><div class="stepNum">2</div><div class="stepText">
       Add the <b>ground coffee</b> (the app tells you how many grams). Give it a gentle shake so it sits flat.
     </div></div>
-
     <div class="step"><div class="stepNum">3</div><div class="stepText">
-      Boil water and let it rest about 30 seconds. Tap <b>Start brew</b> on the app.
+      Boil water and let it rest about 30 seconds. Tap <b>Begin brewing</b> on the app.
     </div></div>
-
     <div class="step"><div class="stepNum">4</div><div class="stepText">
-      <b>The Bloom:</b> Slowly pour just enough water to wet all the coffee (the app shows the amount). It will puff up and bubble — that's good. Wait while it sits.
+      <b>The Bloom:</b> Slowly pour just enough water to wet all the coffee (the app shows the amount). It will puff up and bubble &mdash; that&rsquo;s a good sign. Let it rest.
     </div></div>
-
     <div class="step"><div class="stepNum">5</div><div class="stepText">
-      <b>The Pours:</b> When the app moves to Pour 1, 2, and 3, slowly add water in <b>circles</b>, starting in the middle and spiraling out. Keep the water level below the top. Pour up to the number the app shows each time.
+      <b>The Pours:</b> When the app moves to Pour 1, 2, and 3, slowly add water in gentle <b>circles</b>, starting in the middle and spiraling outward. Keep the level below the rim, and pour up to the number shown each time.
     </div></div>
-
     <div class="step"><div class="stepNum">6</div><div class="stepText">
-      <b>Drawdown:</b> Stop pouring and let all the water drain through. When it's done dripping, you're finished. Lift out the filter, swirl, and pour.
+      <b>Drawdown:</b> Stop pouring and let it all drain through. When the dripping stops, you&rsquo;re done. Lift out the filter, swirl, and pour.
+    </div></div>
+    <div class="step"><div class="stepNum">&#9733;</div><div class="stepText">
+      Go slow and steady &mdash; the gentle, unhurried pour is the whole secret. It doesn&rsquo;t need to be perfect to taste wonderful.
     </div></div>
 
-    <div class="step"><div class="stepNum">★</div><div class="stepText">
-      Go slow and steady — pouring gently is the whole trick. It doesn't have to be perfect to taste great.
-    </div></div>
-
-    <button class="closeBtn" id="closeBtn">Got it</button>
+    <button class="closeBtn" id="closeBtn">Lovely, thank you</button>
   </div>
 </div>
 
 <script>
-  // ── Caleb's dialed-in grinders, ordered by frequency of use ──
   var GRINDERS = {
-    smeg:   { label: "Smeg CGF01",      setting: "22",  note: "Baseline",            ratio: 16 },
-    kultra: { label: "1Zpresso K-Ultra", setting: "8.7", note: "Standard beans",      ratio: 16 },
-    kmax:   { label: "1Zpresso K-Max",   setting: "8.4", note: "Fresh / specialty",   ratio: 16 }
+    smeg:   { label: "Smeg CGF01",      setting: "22",  note: "everyday",          ratio: 16 },
+    kultra: { label: "1Zpresso K-Ultra", setting: "8.7", note: "standard beans",    ratio: 16 },
+    kmax:   { label: "1Zpresso K-Max",   setting: "8.4", note: "fresh & specialty", ratio: 16 }
   };
   var ORDER = ["smeg", "kultra", "kmax"];
 
   var grinder = "smeg";
-  var water = 950;            // slider is water-anchored (ml)
+  var water = 950;
   var elapsed = 0;
   var running = false;
   var ticker = null;
@@ -215,11 +401,11 @@
     var rem = water - bloom;
     var pour = Math.round(rem / 3);
     return [
-      { label: "Bloom",   target: bloom,            atSec: 0   },
-      { label: "Pour 1",  target: bloom + pour,     atSec: 45  },
-      { label: "Pour 2",  target: bloom + pour * 2, atSec: 90  },
-      { label: "Pour 3",  target: water,            atSec: 135 },
-      { label: "Drawdown",target: water,            atSec: 180 }
+      { label: "Bloom",    target: bloom,            atSec: 0   },
+      { label: "Pour 1",   target: bloom + pour,     atSec: 45  },
+      { label: "Pour 2",   target: bloom + pour * 2, atSec: 90  },
+      { label: "Pour 3",   target: water,            atSec: 135 },
+      { label: "Drawdown", target: water,            atSec: 180 }
     ];
   }
 
@@ -248,8 +434,9 @@
     var bloom = Math.round(d * 2);
     var oz = (water / 29.5735).toFixed(1);
     var cups = (water / 236.588).toFixed(1);
-    document.getElementById("doseLabel").textContent =
-      "Water · " + water + "ml (" + oz + "oz · ~" + cups + " 8oz cups) → " + d + "g coffee";
+    document.getElementById("doseLabel").innerHTML =
+      water + " ml &nbsp;&#183;&nbsp; " + oz + " oz &nbsp;&#183;&nbsp; ~" + cups +
+      " <b>8oz cups</b> &nbsp;&#183;&nbsp; " + d + " g coffee";
     var defs = [
       [water + "ml", "water"],
       [d + "g", "coffee"],
@@ -287,7 +474,7 @@
         '<div class="phaseDot"></div>' +
         '<div class="phaseName">' + p.label + '</div>' +
         '<div class="phaseTime">' + fmt(p.atSec) + '</div>' +
-        '<div class="phaseTarget">' + (p.label === "Drawdown" ? "—" : p.target + "ml") + '</div>';
+        '<div class="phaseTarget">' + (p.label === "Drawdown" ? "&mdash;" : p.target + "ml") + '</div>';
       box.appendChild(row);
     });
   }
@@ -297,7 +484,7 @@
     var prog = Math.min(elapsed / 270, 1);
     document.getElementById("progFill").style.width = (prog * 100) + "%";
     var btn = document.getElementById("ctrlBtn");
-    btn.textContent = running ? "Pause" : (elapsed === 0 ? "Start brew" : "Resume");
+    btn.textContent = running ? "Pause" : (elapsed === 0 ? "Begin brewing" : "Resume");
     btn.className = "ctrlBtn" + (running ? " pause" : "");
   }
 
