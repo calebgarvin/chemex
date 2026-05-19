@@ -66,9 +66,15 @@
     color: var(--ink); line-height: .95; letter-spacing: -.5px;
   }
   h1 .em { font-style: italic; font-weight: 500; color: var(--sage); }
-  .sub {
-    font-size: 16px; color: #8a9a7e; margin-top: 8px; font-style: italic;
-    letter-spacing: .3px;
+  .verse {
+    font-family: 'Cormorant Garamond', serif; font-size: 17px;
+    color: #7e8f73; margin-top: 10px; font-style: italic;
+    line-height: 1.5; letter-spacing: .2px;
+  }
+  .verse .ref {
+    display: block; margin-top: 7px; font-style: normal;
+    font-family: 'Fraunces', serif; font-size: 11px;
+    letter-spacing: 2px; text-transform: uppercase; color: #a8b59c;
   }
   .rule { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 14px auto 0; }
   .rule span { height: 1px; width: 46px; background: linear-gradient(90deg, transparent, #cdbf9e); }
@@ -76,11 +82,11 @@
   .rule svg { width: 14px; opacity: .7; }
 
   .helpBtn {
-    position: absolute; top: 4px; right: 0;
-    width: 40px; height: 40px; border-radius: 50%;
+    position: absolute; top: -16px; right: -10px;
+    width: 38px; height: 38px; border-radius: 50%;
     background: #f3f7ee; border: 1px solid #d8e3cf; color: var(--sage);
     cursor: pointer; transition: all .25s ease; display: flex;
-    align-items: center; justify-content: center;
+    align-items: center; justify-content: center; z-index: 5;
   }
   .helpBtn svg { width: 20px; height: 20px; }
   .helpBtn:hover { background: var(--sage); color: #fff; transform: rotate(8deg) scale(1.05); }
@@ -144,16 +150,89 @@
   }
 
   .timerBox {
-    background:
-      radial-gradient(ellipse at 50% 0%, #fdf0d3 0%, rgba(253,240,211,0) 70%),
-      linear-gradient(165deg, #f3f7ee, #e9f1e3);
+    background: #e9f1e3;
     border: 1.5px solid #dde7d3; border-radius: 18px;
     padding: 26px 20px; text-align: center; position: relative; overflow: hidden;
+    min-height: 188px;
   }
-  .timerBox .sun {
-    position: absolute; top: -38px; left: 50%; transform: translateX(-50%);
-    width: 90px; opacity: .55;
+  /* dawn scene layers, all behind the timer content */
+  .scene { position: absolute; inset: 0; pointer-events: none; }
+  .sky {
+    position: absolute; inset: 0;
+    background: #2f4a52;            /* pre-dawn; hue shifted via JS */
+    transition: background 1.4s ease;
   }
+  .stars { position: absolute; inset: 0; transition: opacity 1.4s ease; }
+  .star { position: absolute; width: 2px; height: 2px; border-radius: 50%;
+    background: #fff; animation: twinkle 3s ease-in-out infinite; }
+  @keyframes twinkle { 0%,100%{opacity:.25} 50%{opacity:.9} }
+  .sunWrap {
+    position: absolute; left: 50%; bottom: 0;
+    width: 1px; height: 1px;
+    transition: transform 1.2s cubic-bezier(.33,.66,.4,1);
+    transform: translate(-50%, 40px);
+  }
+  .rays {
+    position: absolute; left: 50%; top: 50%; width: 200px; height: 200px;
+    margin: -100px 0 0 -100px; opacity: 0;
+    transition: opacity 1.4s ease;
+    animation: spin 70s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .disc {
+    position: absolute; left: 50%; top: 50%;
+    width: 60px; height: 60px; margin: -30px 0 0 -30px;
+    border-radius: 50%; background: #ffd56b;
+    box-shadow: 0 0 28px 10px rgba(255,210,120,.55);
+  }
+  .hill { position: absolute; left: 0; right: 0; border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    transition: background 1.4s ease; z-index: 1; }
+  .h3 { bottom: 0; height: 46%; background: #6f8f6a; }
+  .h2 { bottom: 0; height: 62%; background: #5e7d57; left: -12%; right: -12%; }
+  .h1 { bottom: 0; height: 38%; background: #4f6b4c; left: -8%; right: -8%; }
+  .moon {
+    position: absolute; left: 12%; top: 14%; width: 36px; height: 36px; z-index: 1;
+    transition: transform 1.6s ease, opacity 1.6s ease; pointer-events: none;
+  }
+  .flora {
+    position: absolute; bottom: 0; z-index: 2;
+    opacity: 0; transform: translateY(16px) scale(.6); transform-origin: bottom center;
+    transition: opacity 1s ease, transform 1.3s cubic-bezier(.34,1.3,.5,1);
+    pointer-events: none;
+  }
+  .flora.up { opacity: 1; transform: translateY(0) scale(1); }
+  /* tree: permanent, upper-left on the tallest (back) hill */
+  .tree {
+    position: absolute; left: 9%; bottom: 30%; width: 62px; z-index: 2;
+    pointer-events: none;
+  }
+  /* flowers: right side, on the middle and top hills */
+  .fl-1 { right: 8%;  bottom: 30%; width: 24px; }
+  .fl-2 { right: 22%; bottom: 24%; width: 22px; }
+  .fl-3 { right: 14%; bottom: 17%; width: 26px; }
+  .fl-4 { right: 30%; bottom: 13%; width: 20px; }
+  .lander {
+    position: absolute; z-index: 3; opacity: 0;
+    transform: translate(-130px, -34px) scale(.6);
+    transition: opacity .5s ease, transform 1.5s cubic-bezier(.3,.7,.3,1);
+  }
+  .landRed  { left: 13%; bottom: 46%; }
+  .landBlue { left: 5%;  bottom: 42%; }
+  .lander.settle { opacity: 1; transform: translate(0, 0) scale(.6); }
+  .bird {
+    position: absolute; left: -52px; opacity: 0;
+    transition: opacity .7s ease;
+  }
+  .birdA { top: 9%; }
+  .birdB { top: 19%; }
+  .bird.fly { animation: drift 17s linear forwards; }
+  @keyframes drift {
+    0% { transform: translateX(0) translateY(0) scale(.66); }
+    45% { transform: translateX(180px) translateY(-14px) scale(.66); }
+    100% { transform: translateX(460px) translateY(8px) scale(.66); }
+  }
+  .timerBox .bigTime, .timerBox .progTrack, .timerBox .btnRow { position: relative; z-index: 3; }
+  .timerBox .bigTime { transition: color 1.2s ease, text-shadow 1.2s ease; }
   .bigTime {
     font-family: 'Fraunces', serif; font-size: 66px; font-weight: 900;
     color: var(--ink); line-height: 1; position: relative;
@@ -305,7 +384,12 @@
     </svg>
     <div class="kicker">A Gentle Morning Ritual</div>
     <h1>Chemex <span class="em">Assistant</span></h1>
-    <div class="sub">brewed slow, with love &#183; 1&#8202;:&#8202;16</div>
+    <div class="verse">
+      &ldquo;My voice You shall hear in the morning, O&nbsp;Lord;<br>
+      In the morning I will direct it to You,<br>
+      And I will look up.&rdquo;
+      <span class="ref">Psalm 5:3 &#183; NKJV</span>
+    </div>
     <div class="rule">
       <span></span>
       <svg viewBox="0 0 24 24" fill="#9cc18f"><path d="M12 2c2 4 2 7 0 9-2-2-2-5 0-9Zm0 20c-2-4-2-7 0-9 2 2 2 5 0 9ZM2 12c4-2 7-2 9 0-2 2-5 2-9 0Zm20 0c-4 2-7 2-9 0 2-2 5-2 9 0Z"/></svg>
@@ -326,7 +410,103 @@
 
   <div class="section">
     <div class="timerBox">
-      <svg class="sun" viewBox="0 0 100 60"><g stroke="#e0a548" stroke-width="2.5" stroke-linecap="round"><line x1="50" y1="6" x2="50" y2="0"/><line x1="30" y1="12" x2="27" y2="6"/><line x1="70" y1="12" x2="73" y2="6"/><line x1="18" y1="28" x2="11" y2="25"/><line x1="82" y1="28" x2="89" y2="25"/></g><path d="M22 56 A28 28 0 0 1 78 56Z" fill="#fbd989"/></svg>
+      <div class="scene">
+        <div class="sky" id="sky"></div>
+        <div class="stars" id="stars"></div>
+        <svg class="moon" id="moon" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+          <path d="M25 4 A15 15 0 1 0 25 32 A12 12 0 1 1 25 4 Z" fill="#fdfdf5"/>
+        </svg>
+        <div class="sunWrap" id="sunWrap">
+          <svg class="rays" id="rays" viewBox="0 0 200 200">
+            <g fill="#ffe39a">
+              <polygon points="100,100 92,0 108,0"/>
+              <polygon points="100,100 200,92 200,108"/>
+              <polygon points="100,100 108,200 92,200"/>
+              <polygon points="100,100 0,108 0,92"/>
+              <polygon points="100,100 168,26 180,38" opacity=".8"/>
+              <polygon points="100,100 174,168 162,180" opacity=".8"/>
+              <polygon points="100,100 26,32 38,20" opacity=".8"/>
+              <polygon points="100,100 32,174 20,162" opacity=".8"/>
+            </g>
+          </svg>
+          <div class="disc" id="disc"></div>
+        </div>
+        <div class="hill h2"></div>
+
+        <svg class="bird birdA" id="birdA" width="40" height="35" viewBox="0 0 80 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22 44 C18 30 28 18 42 18 C52 18 58 24 60 32 C68 30 74 34 76 40 C70 42 64 42 60 41 C58 52 48 58 38 56 C42 50 42 46 40 42 C34 50 26 50 22 44Z" fill="#c5372f"/>
+          <path d="M40 42 C44 48 52 50 60 41" stroke="#9a2820" stroke-width="1.5" fill="none"/>
+          <path d="M30 20 C34 12 40 12 44 18 C40 19 35 20 30 24Z" fill="#c5372f"/>
+          <circle cx="50" cy="29" r="2.6" fill="#1c1c1c"/>
+          <path d="M44 30 L37 31" stroke="#2a2a2a" stroke-width="3" stroke-linecap="round"/>
+          <path d="M60 32 L73 27" stroke="#e0a548" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+
+        <svg class="bird birdB" id="birdB" width="38" height="33" viewBox="0 0 80 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22 44 C18 30 28 18 42 18 C52 18 58 24 60 32 C68 30 74 34 76 40 C70 42 64 42 60 41 C58 52 48 58 38 56 C42 50 42 46 40 42 C34 50 26 50 22 44Z" fill="#4f86c6"/>
+          <path d="M40 42 C44 48 52 50 60 41" stroke="#33608f" stroke-width="1.5" fill="none"/>
+          <path d="M40 50 C46 54 54 54 60 49" fill="#bcd6ef"/>
+          <circle cx="50" cy="29" r="2.6" fill="#1c1c1c"/>
+          <path d="M60 32 L73 28" stroke="#e0a548" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+
+        <div class="hill h3"></div>
+        <div class="hill h1"></div>
+
+        <div class="flora fl-1" id="f1">
+          <svg viewBox="0 0 30 44" width="100%" xmlns="http://www.w3.org/2000/svg">
+            <rect x="14" y="20" width="2.5" height="24" fill="#5e7d57"/>
+            <circle cx="15" cy="16" r="6" fill="#e9a6a0"/><circle cx="9" cy="20" r="6" fill="#f0b8b2"/>
+            <circle cx="21" cy="20" r="6" fill="#f0b8b2"/><circle cx="15" cy="22" r="6" fill="#f2c0bb"/>
+            <circle cx="15" cy="19" r="3.4" fill="#e0a548"/>
+          </svg>
+        </div>
+        <div class="flora fl-2" id="f2">
+          <svg viewBox="0 0 26 40" width="100%" xmlns="http://www.w3.org/2000/svg">
+            <rect x="12" y="18" width="2.2" height="22" fill="#5e7d57"/>
+            <circle cx="13" cy="14" r="5" fill="#f2c0bb"/><circle cx="8" cy="18" r="5" fill="#e9a6a0"/>
+            <circle cx="18" cy="18" r="5" fill="#e9a6a0"/><circle cx="13" cy="17" r="2.8" fill="#e0a548"/>
+          </svg>
+        </div>
+        <div class="flora fl-3" id="f3">
+          <svg viewBox="0 0 30 44" width="100%" xmlns="http://www.w3.org/2000/svg">
+            <rect x="14" y="20" width="2.5" height="24" fill="#5e7d57"/>
+            <circle cx="15" cy="16" r="6" fill="#f0b8b2"/><circle cx="9" cy="20" r="6" fill="#e9a6a0"/>
+            <circle cx="21" cy="20" r="6" fill="#e9a6a0"/><circle cx="15" cy="22" r="6" fill="#f0b8b2"/>
+            <circle cx="15" cy="19" r="3.4" fill="#e0a548"/>
+          </svg>
+        </div>
+        <div class="flora fl-4" id="f4">
+          <svg viewBox="0 0 24 38" width="100%" xmlns="http://www.w3.org/2000/svg">
+            <rect x="11" y="17" width="2" height="21" fill="#5e7d57"/>
+            <circle cx="12" cy="13" r="4.5" fill="#f2c0bb"/><circle cx="8" cy="16" r="4.5" fill="#f0b8b2"/>
+            <circle cx="16" cy="16" r="4.5" fill="#f0b8b2"/><circle cx="12" cy="15" r="2.5" fill="#e0a548"/>
+          </svg>
+        </div>
+        <div class="tree" id="tree">
+          <svg viewBox="0 0 70 86" width="100%" xmlns="http://www.w3.org/2000/svg">
+            <rect x="32" y="52" width="7" height="34" rx="2.5" fill="#7a5a3c"/>
+            <circle cx="35" cy="34" r="20" fill="#5e7d57"/>
+            <circle cx="22" cy="44" r="15" fill="#6f8f6a"/>
+            <circle cx="49" cy="44" r="15" fill="#6f8f6a"/>
+            <circle cx="35" cy="48" r="15" fill="#5e7d57"/>
+          </svg>
+        </div>
+
+        <svg class="lander landRed" id="landRed" width="34" height="30" viewBox="0 0 80 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22 44 C18 30 28 18 42 18 C52 18 58 24 60 32 C68 30 74 34 76 40 C70 42 64 42 60 41 C58 52 48 58 38 56 C42 50 42 46 40 42 C34 50 26 50 22 44Z" fill="#c5372f"/>
+          <path d="M30 20 C34 12 40 12 44 18 C40 19 35 20 30 24Z" fill="#c5372f"/>
+          <circle cx="50" cy="29" r="2.6" fill="#1c1c1c"/>
+          <path d="M44 30 L37 31" stroke="#2a2a2a" stroke-width="3" stroke-linecap="round"/>
+          <path d="M60 32 L73 27" stroke="#e0a548" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+        <svg class="lander landBlue" id="landBlue" width="32" height="28" viewBox="0 0 80 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22 44 C18 30 28 18 42 18 C52 18 58 24 60 32 C68 30 74 34 76 40 C70 42 64 42 60 41 C58 52 48 58 38 56 C42 50 42 46 40 42 C34 50 26 50 22 44Z" fill="#4f86c6"/>
+          <path d="M40 50 C46 54 54 54 60 49" fill="#bcd6ef"/>
+          <circle cx="50" cy="29" r="2.6" fill="#1c1c1c"/>
+          <path d="M60 32 L73 28" stroke="#e0a548" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
       <div class="bigTime" id="bigTime">0:00</div>
       <div class="progTrack"><div class="progFill" id="progFill"></div></div>
       <div class="btnRow">
@@ -480,13 +660,162 @@
     });
   }
 
+  // Dawn sky palette: pre-dawn -> rose -> peach -> bright morning blue.
+  var SKY = [
+    { at: 0.00, c: [47, 74, 82]   },  // deep pre-dawn teal-blue
+    { at: 0.28, c: [98, 80, 104]  },  // dusky violet
+    { at: 0.50, c: [206, 132, 124] }, // rose
+    { at: 0.72, c: [251, 198, 150] }, // warm peach
+    { at: 1.00, c: [150, 205, 246] }  // bright clean morning blue
+  ];
+  // Each hill: shaded pre-dawn color -> brighter sunlit color.
+  var HILLS = {
+    h3: { from: [111, 143, 106], to: [150, 192, 130] },
+    h2: { from: [94, 125, 87],   to: [124, 170, 110] },
+    h1: { from: [79, 107, 76],   to: [104, 150, 96]  }
+  };
+  function lerpColor(a, b, f) {
+    var r = Math.round(a[0] + (b[0] - a[0]) * f);
+    var g = Math.round(a[1] + (b[1] - a[1]) * f);
+    var bl = Math.round(a[2] + (b[2] - a[2]) * f);
+    return "rgb(" + r + "," + g + "," + bl + ")";
+  }
+  function skyColor(t) {
+    for (var i = 1; i < SKY.length; i++) {
+      if (t <= SKY[i].at) {
+        var a = SKY[i - 1], b = SKY[i];
+        var f = (t - a.at) / (b.at - a.at || 1);
+        return lerpColor(a.c, b.c, f);
+      }
+    }
+    return "rgb(183,214,230)";
+  }
+
+  function buildStars() {
+    var box = document.getElementById("stars");
+    if (box.childElementCount) return;
+    var pts = [[14,22],[28,12],[42,30],[58,16],[71,26],[84,14],
+               [22,40],[48,44],[66,38],[90,42],[36,55],[78,58]];
+    pts.forEach(function (p, i) {
+      var s = document.createElement("div");
+      s.className = "star";
+      s.style.left = p[0] + "%";
+      s.style.top = p[1] + "%";
+      s.style.animationDelay = (i * 0.4) + "s";
+      box.appendChild(s);
+    });
+  }
+
+  var cardinalPasses = [false, false, false];
+  var bluebirdPasses = [false, false, false];
+  var landed = false;
+
+  function renderDawn() {
+    // Full dawn unfolds over 0 -> 300s (5:00), then holds.
+    var t = Math.min(elapsed / 300, 1);
+    var sky   = document.getElementById("sky");
+    var stars = document.getElementById("stars");
+    var wrap  = document.getElementById("sunWrap");
+    var rays  = document.getElementById("rays");
+    var bigTime = document.getElementById("bigTime");
+
+    sky.style.background = skyColor(t);
+    stars.style.opacity = Math.max(0, 1 - t * 2.4).toFixed(3);
+
+    // Crescent moon sits high at rest, then slowly sets below the horizon
+    // over roughly 8s -> 50s into the brew.
+    var moon = document.getElementById("moon");
+    if (moon) {
+      var mt = Math.max(0, Math.min((elapsed - 8) / 42, 1));  // 0 at 8s, 1 at 50s
+      moon.style.transform =
+        "translate(-" + (mt * 26).toFixed(1) + "px, " + (mt * 150).toFixed(1) + "px)";
+      moon.style.opacity = (1 - mt).toFixed(3);
+    }
+
+    // Hills brighten as sunlight reaches them (lags the sky slightly).
+    var litT = Math.max(0, Math.min((t - 0.15) / 0.7, 1));
+    document.querySelector(".h3").style.background = lerpColor(HILLS.h3.from, HILLS.h3.to, litT);
+    document.querySelector(".h2").style.background = lerpColor(HILLS.h2.from, HILLS.h2.to, litT);
+    document.querySelector(".h1").style.background = lerpColor(HILLS.h1.from, HILLS.h1.to, litT);
+
+    // Sun arcs from behind the centre hill up toward the upper right.
+    var xDrift = t * 92;                       // moves rightward
+    var lift = Math.sin(t * Math.PI * 0.5);    // ease-out vertical rise
+    var yUp = 40 - lift * 168;                 // starts +40 (hidden below), rises up
+    wrap.style.transform =
+      "translate(calc(-50% + " + xDrift.toFixed(1) + "px), " + yUp.toFixed(1) + "px)";
+
+    rays.style.opacity = Math.min(t * 1.4, 0.85).toFixed(3);
+
+    // Digits shift from pale (against dark sky) to deep ink (against bright sky).
+    var ink = t < 0.5 ? "#f3efe4" : "#3c4a3a";
+    bigTime.style.color = ink;
+    bigTime.style.textShadow = t < 0.5
+      ? "0 1px 6px rgba(0,0,0,.35)" : "0 1px 0 rgba(255,255,255,.4)";
+
+    // Flowers & tree sprout between 3:30 (210s) and 4:45 (285s), staggered.
+    var floraOrder = [
+      ["treeG", 210], ["f1", 222], ["f3", 234], ["f2", 248], ["f4", 262]
+    ];
+    floraOrder.forEach(function (item) {
+      var el = document.getElementById(item[0]);
+      if (!el) return;
+      if (elapsed >= item[1]) el.classList.add("up");
+      else el.classList.remove("up");
+    });
+
+    // Cardinal passes at 60/120/180s; bluebird at 90/150/210s.
+    [60, 120, 180].forEach(function (sec, i) {
+      if (running && !cardinalPasses[i] && elapsed >= sec) {
+        cardinalPasses[i] = true;
+        launchBird("birdA");
+      }
+    });
+    [90, 150, 210].forEach(function (sec, i) {
+      if (running && !bluebirdPasses[i] && elapsed >= sec) {
+        bluebirdPasses[i] = true;
+        launchBird("birdB");
+      }
+    });
+
+    // At 5:00 a pair flies in and settles on the tree for the day.
+    if (running && !landed && elapsed >= 300) {
+      landed = true;
+      document.getElementById("landRed").classList.add("settle");
+      setTimeout(function () {
+        document.getElementById("landBlue").classList.add("settle");
+      }, 1400);
+    }
+
+    // Stop the sun's rays spinning at 5:15.
+    if (elapsed >= 315) {
+      var rEl = document.getElementById("rays");
+      if (rEl) rEl.style.animationPlayState = "paused";
+    }
+  }
+
+  function launchBird(id) {
+    var b = document.getElementById(id);
+    if (!b) return;
+    b.classList.remove("fly");
+    b.style.animation = "none";
+    b.style.opacity = "1";
+    void b.offsetWidth;                 // commit the reset
+    requestAnimationFrame(function () {
+      b.style.animation = "";           // back to stylesheet rule
+      b.classList.add("fly");
+    });
+    setTimeout(function () { b.style.opacity = "0"; }, 16500);
+  }
+
   function renderTimer() {
     document.getElementById("bigTime").textContent = fmt(elapsed);
-    var prog = Math.min(elapsed / 270, 1);
+    var prog = Math.min(elapsed / 300, 1);
     document.getElementById("progFill").style.width = (prog * 100) + "%";
     var btn = document.getElementById("ctrlBtn");
     btn.textContent = running ? "Pause" : (elapsed === 0 ? "Begin brewing" : "Resume");
     btn.className = "ctrlBtn" + (running ? " pause" : "");
+    renderDawn();
   }
 
   function renderAll() {
@@ -495,6 +824,24 @@
 
   function reset() {
     running = false; elapsed = 0;
+    cardinalPasses = [false, false, false];
+    bluebirdPasses = [false, false, false];
+    landed = false;
+    ["birdA", "birdB"].forEach(function (id) {
+      var b = document.getElementById(id);
+      if (b) { b.classList.remove("fly"); b.style.animation = "none"; b.style.opacity = "0"; }
+    });
+    ["landRed", "landBlue"].forEach(function (id) {
+      var b = document.getElementById(id);
+      if (b) b.classList.remove("settle");
+    });
+    ["treeG", "f1", "f2", "f3", "f4"].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.remove("up");
+    });
+    var rEl = document.getElementById("rays");
+    if (rEl) rEl.style.animationPlayState = "running";
+    buildStars();
     if (ticker) { clearInterval(ticker); ticker = null; }
     renderAll();
   }
@@ -528,6 +875,7 @@
     if (e.target === overlay) overlay.classList.remove("show");
   });
 
+  buildStars();
   renderAll();
 </script>
 </body>
