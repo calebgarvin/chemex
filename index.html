@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<title>Chemex Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root { --accent: #c9622a; }
+  html, body { background: #120e08; }
+  body {
+    min-height: 100vh;
+    background: radial-gradient(circle at 20% 10%, #2c2419 0%, #1a150d 55%, #120e08 100%);
+    display: flex; justify-content: center; align-items: flex-start;
+    padding: 32px 16px calc(32px + env(safe-area-inset-bottom));
+    font-family: 'DM Mono', monospace;
+  }
+  .card {
+    width: 100%; max-width: 460px; background: #f5efe1;
+    border-radius: 4px; padding: 36px 28px 30px;
+    box-shadow: 0 24px 60px rgba(0,0,0,.5); border: 1px solid #e2d6bd;
+  }
+  header { text-align: center; margin-bottom: 30px; }
+  .kicker { font-size: 11px; letter-spacing: 4px; color: #a8916b; margin-bottom: 8px; }
+  h1 { font-family: 'Fraunces', serif; font-size: 40px; font-weight: 900; color: #231a0f; line-height: 1; }
+  .sub { font-size: 12px; color: #8a7858; margin-top: 10px; letter-spacing: 1px; }
+  .section { margin-bottom: 26px; }
+  .secLabel { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #9a8763; margin-bottom: 12px; }
+  .grRow { display: flex; gap: 8px; }
+  .grBtn {
+    flex: 1; background: #ede4d0; border: 1px solid #ddd0b4; border-radius: 3px;
+    padding: 12px 8px; cursor: pointer; text-align: center;
+    font-family: 'DM Mono', monospace; transition: all .25s ease; color: #231a0f;
+  }
+  .grBtn:hover { transform: translateY(-2px); }
+  .grBtn.active { background: #231a0f; border-color: #231a0f; color: #f5efe1; }
+  .grName { font-size: 11px; font-weight: 500; margin-bottom: 6px; }
+  .grSet { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 900; color: var(--accent); }
+  .grNote { font-size: 9px; opacity: .7; margin-top: 5px; }
+  input[type=range] { width: 100%; accent-color: #c9622a; cursor: pointer; height: 28px; }
+  .statRow { display: flex; gap: 8px; margin-top: 16px; }
+  .stat { flex: 1; background: #ede4d0; border-radius: 3px; padding: 10px 6px; text-align: center; }
+  .statBig { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 600; color: #231a0f; }
+  .statSmall { font-size: 9px; color: #9a8763; text-transform: uppercase; letter-spacing: 1px; margin-top: 3px; }
+  .timerBox { background: #231a0f; border-radius: 4px; padding: 26px 20px; text-align: center; }
+  .bigTime { font-family: 'Fraunces', serif; font-size: 64px; font-weight: 900; color: #f5efe1; line-height: 1; }
+  .progTrack { height: 4px; background: #3d3120; border-radius: 2px; margin: 20px 0; overflow: hidden; }
+  .progFill { height: 100%; background: var(--accent); transition: width 1s linear; width: 0%; }
+  .btnRow { display: flex; gap: 10px; }
+  .ctrlBtn {
+    flex: 2; background: var(--accent); color: #fff; border: none; border-radius: 3px;
+    padding: 15px; font-size: 15px; font-weight: 500; cursor: pointer; font-family: 'DM Mono', monospace;
+  }
+  .ctrlBtn.pause { background: #7a6647; }
+  .resetBtn {
+    flex: 1; background: transparent; color: #a8916b; border: 1px solid #4a3d28;
+    border-radius: 3px; padding: 15px; font-size: 15px; cursor: pointer; font-family: 'DM Mono', monospace;
+  }
+  .phaseRow {
+    display: flex; align-items: center; gap: 12px; padding: 12px;
+    border-radius: 3px; margin-bottom: 4px; color: #231a0f;
+    transition: background .4s ease, opacity .4s ease;
+  }
+  .phaseRow.active { background: #231a0f; color: #f5efe1; }
+  .phaseRow.done { opacity: .4; }
+  .phaseDot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; background: #d8cdb8; }
+  .phaseRow.active .phaseDot { background: var(--accent); animation: pulse 1.4s infinite; }
+  .phaseRow.done .phaseDot { background: #9a8c78; }
+  .phaseName { flex: 1; font-size: 13px; font-weight: 500; }
+  .phaseTime { font-size: 12px; color: #9a8763; width: 44px; }
+  .phaseRow.active .phaseTime { color: #c9b78f; }
+  .phaseTarget { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 600; width: 60px; text-align: right; }
+  .footnote { font-size: 10px; color: #a8916b; margin-top: 14px; line-height: 1.6; text-align: center; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.45} }
+
+  header { position: relative; }
+  .helpBtn {
+    position: absolute; top: -8px; right: -6px;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: #ede4d0; border: 1px solid #ddd0b4; color: #8a7858;
+    font-family: 'Fraunces', serif; font-size: 16px; font-weight: 900;
+    cursor: pointer; transition: all .2s ease; line-height: 1;
+  }
+  .helpBtn:hover { background: #231a0f; color: #f5efe1; border-color: #231a0f; }
+
+  .overlay {
+    position: fixed; inset: 0; background: rgba(18,14,8,.78);
+    display: none; align-items: center; justify-content: center;
+    padding: 24px; z-index: 50; backdrop-filter: blur(3px);
+  }
+  .overlay.show { display: flex; }
+  .guide {
+    background: #f5efe1; border-radius: 4px; max-width: 420px; width: 100%;
+    max-height: 86vh; overflow-y: auto; padding: 30px 26px;
+    border: 1px solid #e2d6bd; box-shadow: 0 24px 60px rgba(0,0,0,.6);
+  }
+  .guideTitle { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 900; color: #231a0f; margin-bottom: 4px; }
+  .guideSub { font-size: 11px; color: #9a8763; letter-spacing: 1px; margin-bottom: 22px; }
+  .step { display: flex; gap: 14px; margin-bottom: 18px; }
+  .stepNum {
+    flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--accent); color: #fff; font-family: 'Fraunces', serif;
+    font-weight: 900; font-size: 14px; display: flex; align-items: center;
+    justify-content: center; line-height: 1;
+  }
+  .stepText { font-size: 13px; line-height: 1.65; color: #463a26; padding-top: 3px; }
+  .stepText b { color: #231a0f; }
+  .closeBtn {
+    width: 100%; margin-top: 8px; background: #231a0f; color: #f5efe1;
+    border: none; border-radius: 3px; padding: 14px; font-size: 14px;
+    cursor: pointer; font-family: 'DM Mono', monospace;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <header>
+    <button class="helpBtn" id="helpBtn" aria-label="How to brew">?</button>
+    <div class="kicker">POUR-OVER PROTOCOL</div>
+    <h1>Chemex Assistant</h1>
+    <div class="sub">Caleb's calibrated brew bench · 1:16</div>
+  </header>
+
+  <div class="section">
+    <div class="secLabel">Grinder</div>
+    <div class="grRow" id="grRow"></div>
+  </div>
+
+  <div class="section">
+    <div class="secLabel" id="doseLabel"></div>
+    <input type="range" id="waterSlider" min="200" max="950" step="10" />
+    <div class="statRow" id="statRow"></div>
+  </div>
+
+  <div class="section">
+    <div class="timerBox">
+      <div class="bigTime" id="bigTime">0:00</div>
+      <div class="progTrack"><div class="progFill" id="progFill"></div></div>
+      <div class="btnRow">
+        <button class="ctrlBtn" id="ctrlBtn">Start brew</button>
+        <button class="resetBtn" id="resetBtn">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="secLabel">Pour schedule</div>
+    <div id="schedule"></div>
+    <div class="footnote">Bloom 2:1 · three pours on ~45s cadence · target drawdown 3:30–5:00</div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="guide">
+    <div class="guideTitle">How to Pour Over</div>
+    <div class="guideSub">FIRST TIME? START HERE.</div>
+
+    <div class="step"><div class="stepNum">1</div><div class="stepText">
+      Put a <b>paper filter</b> in the Chemex. Pour hot water through it to rinse, then tip that water out. This washes away the papery taste and warms the glass.
+    </div></div>
+
+    <div class="step"><div class="stepNum">2</div><div class="stepText">
+      Add the <b>ground coffee</b> (the app tells you how many grams). Give it a gentle shake so it sits flat.
+    </div></div>
+
+    <div class="step"><div class="stepNum">3</div><div class="stepText">
+      Boil water and let it rest about 30 seconds. Tap <b>Start brew</b> on the app.
+    </div></div>
+
+    <div class="step"><div class="stepNum">4</div><div class="stepText">
+      <b>The Bloom:</b> Slowly pour just enough water to wet all the coffee (the app shows the amount). It will puff up and bubble — that's good. Wait while it sits.
+    </div></div>
+
+    <div class="step"><div class="stepNum">5</div><div class="stepText">
+      <b>The Pours:</b> When the app moves to Pour 1, 2, and 3, slowly add water in <b>circles</b>, starting in the middle and spiraling out. Keep the water level below the top. Pour up to the number the app shows each time.
+    </div></div>
+
+    <div class="step"><div class="stepNum">6</div><div class="stepText">
+      <b>Drawdown:</b> Stop pouring and let all the water drain through. When it's done dripping, you're finished. Lift out the filter, swirl, and pour.
+    </div></div>
+
+    <div class="step"><div class="stepNum">★</div><div class="stepText">
+      Go slow and steady — pouring gently is the whole trick. It doesn't have to be perfect to taste great.
+    </div></div>
+
+    <button class="closeBtn" id="closeBtn">Got it</button>
+  </div>
+</div>
+
+<script>
+  // ── Caleb's dialed-in grinders, ordered by frequency of use ──
+  var GRINDERS = {
+    smeg:   { label: "Smeg CGF01",      setting: "22",  note: "Baseline",            ratio: 16 },
+    kultra: { label: "1Zpresso K-Ultra", setting: "8.7", note: "Standard beans",      ratio: 16 },
+    kmax:   { label: "1Zpresso K-Max",   setting: "8.4", note: "Fresh / specialty",   ratio: 16 }
+  };
+  var ORDER = ["smeg", "kultra", "kmax"];
+
+  var grinder = "smeg";
+  var water = 950;            // slider is water-anchored (ml)
+  var elapsed = 0;
+  var running = false;
+  var ticker = null;
+
+  function dose() { return Math.round(water / GRINDERS[grinder].ratio); }
+
+  function buildSchedule() {
+    var d = dose();
+    var bloom = Math.round(d * 2);
+    var rem = water - bloom;
+    var pour = Math.round(rem / 3);
+    return [
+      { label: "Bloom",   target: bloom,            atSec: 0   },
+      { label: "Pour 1",  target: bloom + pour,     atSec: 45  },
+      { label: "Pour 2",  target: bloom + pour * 2, atSec: 90  },
+      { label: "Pour 3",  target: water,            atSec: 135 },
+      { label: "Drawdown",target: water,            atSec: 180 }
+    ];
+  }
+
+  function fmt(s) {
+    var m = Math.floor(s / 60), r = s % 60;
+    return m + ":" + (r < 10 ? "0" : "") + r;
+  }
+
+  function renderGrinders() {
+    var row = document.getElementById("grRow");
+    row.innerHTML = "";
+    ORDER.forEach(function (k) {
+      var v = GRINDERS[k];
+      var b = document.createElement("button");
+      b.className = "grBtn" + (grinder === k ? " active" : "");
+      b.innerHTML = '<div class="grName">' + v.label + '</div>' +
+                    '<div class="grSet">' + v.setting + '</div>' +
+                    '<div class="grNote">' + v.note + '</div>';
+      b.onclick = function () { grinder = k; reset(); renderAll(); };
+      row.appendChild(b);
+    });
+  }
+
+  function renderStats() {
+    var d = dose();
+    var bloom = Math.round(d * 2);
+    var oz = (water / 29.5735).toFixed(1);
+    var cups = (water / 236.588).toFixed(1);
+    document.getElementById("doseLabel").textContent =
+      "Water · " + water + "ml (" + oz + "oz · ~" + cups + " 8oz cups) → " + d + "g coffee";
+    var defs = [
+      [water + "ml", "water"],
+      [d + "g", "coffee"],
+      [bloom + "ml", "bloom"],
+      [GRINDERS[grinder].setting, "grind"]
+    ];
+    var sr = document.getElementById("statRow");
+    sr.innerHTML = "";
+    defs.forEach(function (p) {
+      var el = document.createElement("div");
+      el.className = "stat";
+      el.innerHTML = '<div class="statBig">' + p[0] + '</div>' +
+                     '<div class="statSmall">' + p[1] + '</div>';
+      sr.appendChild(el);
+    });
+  }
+
+  function activeIdx(sch) {
+    var idx = 0;
+    for (var i = 0; i < sch.length; i++) if (elapsed >= sch[i].atSec) idx = i;
+    return idx;
+  }
+
+  function renderSchedule() {
+    var sch = buildSchedule();
+    var ai = activeIdx(sch);
+    var box = document.getElementById("schedule");
+    box.innerHTML = "";
+    sch.forEach(function (p, i) {
+      var isActive = i === ai && running;
+      var done = elapsed > p.atSec && i < ai;
+      var row = document.createElement("div");
+      row.className = "phaseRow" + (isActive ? " active" : "") + (done ? " done" : "");
+      row.innerHTML =
+        '<div class="phaseDot"></div>' +
+        '<div class="phaseName">' + p.label + '</div>' +
+        '<div class="phaseTime">' + fmt(p.atSec) + '</div>' +
+        '<div class="phaseTarget">' + (p.label === "Drawdown" ? "—" : p.target + "ml") + '</div>';
+      box.appendChild(row);
+    });
+  }
+
+  function renderTimer() {
+    document.getElementById("bigTime").textContent = fmt(elapsed);
+    var prog = Math.min(elapsed / 270, 1);
+    document.getElementById("progFill").style.width = (prog * 100) + "%";
+    var btn = document.getElementById("ctrlBtn");
+    btn.textContent = running ? "Pause" : (elapsed === 0 ? "Start brew" : "Resume");
+    btn.className = "ctrlBtn" + (running ? " pause" : "");
+  }
+
+  function renderAll() {
+    renderGrinders(); renderStats(); renderSchedule(); renderTimer();
+  }
+
+  function reset() {
+    running = false; elapsed = 0;
+    if (ticker) { clearInterval(ticker); ticker = null; }
+    renderAll();
+  }
+
+  document.getElementById("waterSlider").value = water;
+  document.getElementById("waterSlider").addEventListener("input", function (e) {
+    water = Number(e.target.value);
+    reset();
+  });
+
+  document.getElementById("ctrlBtn").addEventListener("click", function () {
+    running = !running;
+    if (running) {
+      ticker = setInterval(function () { elapsed++; renderSchedule(); renderTimer(); }, 1000);
+    } else if (ticker) {
+      clearInterval(ticker); ticker = null;
+    }
+    renderTimer(); renderSchedule();
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", reset);
+
+  var overlay = document.getElementById("overlay");
+  document.getElementById("helpBtn").addEventListener("click", function () {
+    overlay.classList.add("show");
+  });
+  document.getElementById("closeBtn").addEventListener("click", function () {
+    overlay.classList.remove("show");
+  });
+  overlay.addEventListener("click", function (e) {
+    if (e.target === overlay) overlay.classList.remove("show");
+  });
+
+  renderAll();
+</script>
+</body>
+</html>
