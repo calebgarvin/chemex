@@ -357,7 +357,7 @@
       Put a <b>paper filter</b> in the Chemex. Pour hot water through it to rinse, then tip that water out. This rinses away any papery taste and warms the glass.
     </div></div>
     <div class="step"><div class="stepNum">2</div><div class="stepText">
-      Add the <b>ground coffee</b> (the app tells you how many grams). Give it a gentle shake so it sits flat.
+      Put the Chemex on a <b>kitchen scale</b> and set it to grams. Add the <b>ground coffee</b> (the app tells you how many grams), give it a gentle shake so it sits flat, then set the scale back to zero.
     </div></div>
     <div class="step"><div class="stepNum">3</div><div class="stepText">
       Boil water and let it rest about 30 seconds. Tap <b>Begin brewing</b> on the app.
@@ -366,7 +366,7 @@
       <b>The Bloom:</b> Slowly pour just enough water to wet all the coffee (the app shows the amount). It will puff up and bubble &mdash; that&rsquo;s a good sign. Let it rest.
     </div></div>
     <div class="step"><div class="stepNum">5</div><div class="stepText">
-      <b>The Pours:</b> When the app moves to Pour 1, 2, and 3, slowly add water in gentle <b>circles</b>, starting in the middle and spiraling outward. Keep the level below the rim, and pour up to the number shown each time.
+      <b>The Pours:</b> When the app moves to Pour 1, 2, and 3, slowly add water in gentle <b>circles</b>, starting in the middle and spiraling outward. Watch the scale and pour until it reaches the gram number the app shows for each pour.
     </div></div>
     <div class="step"><div class="stepNum">6</div><div class="stepText">
       <b>Drawdown:</b> Stop pouring and let it all drain through. When the dripping stops, you&rsquo;re done. Lift out the filter, swirl, and pour.
@@ -435,12 +435,13 @@
     var oz = (water / 29.5735).toFixed(1);
     var cups = (water / 236.588).toFixed(1);
     document.getElementById("doseLabel").innerHTML =
-      water + " ml &nbsp;&#183;&nbsp; " + oz + " oz &nbsp;&#183;&nbsp; ~" + cups +
-      " <b>8oz cups</b> &nbsp;&#183;&nbsp; " + d + " g coffee";
+    document.getElementById("doseLabel").innerHTML =
+      "<b>" + water + " g</b> water &nbsp;&#183;&nbsp; " + d + " g coffee &nbsp;&#183;&nbsp; ~" +
+      cups + " 8oz cups (" + oz + " oz)";
     var defs = [
-      [water + "ml", "water"],
+      [water + "g", "water"],
       [d + "g", "coffee"],
-      [bloom + "ml", "bloom"],
+      [bloom + "g", "bloom"],
       [GRINDERS[grinder].setting, "grind"]
     ];
     var sr = document.getElementById("statRow");
@@ -474,7 +475,7 @@
         '<div class="phaseDot"></div>' +
         '<div class="phaseName">' + p.label + '</div>' +
         '<div class="phaseTime">' + fmt(p.atSec) + '</div>' +
-        '<div class="phaseTarget">' + (p.label === "Drawdown" ? "&mdash;" : p.target + "ml") + '</div>';
+        '<div class="phaseTarget">' + (p.label === "Drawdown" ? "&mdash;" : p.target + "g") + '</div>';
       box.appendChild(row);
     });
   }
