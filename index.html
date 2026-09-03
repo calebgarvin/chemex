@@ -116,6 +116,12 @@
   .grSet { font-family: 'Fraunces', serif; font-size: 30px; font-weight: 900; color: var(--gold); line-height: 1; }
   .grBtn.active .grSet { color: #ffe0a8; }
   .grNote { font-size: 12px; opacity: .75; margin-top: 5px; font-style: italic; }
+  .grSplit { display: flex; align-items: stretch; justify-content: center; gap: 6px; }
+  .grHalf { flex: 1; min-width: 0; }
+  .grHalf .grSet { font-size: 26px; }
+  .grHalf .grNote { font-size: 11px; line-height: 1.25; margin-top: 4px; }
+  .grDiv { width: 1px; background: #dde7d3; flex: 0 0 1px; }
+  .grBtn.active .grDiv { background: rgba(255,255,255,.35); }
 
   .doseLabel {
     font-family: 'Fraunces', serif; font-size: 14px; color: var(--ink);
@@ -144,6 +150,7 @@
     padding: 12px 6px; text-align: center;
   }
   .statBig { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 600; color: var(--ink); }
+  .statBig.dual { font-size: 16px; letter-spacing: -.3px; }
   .statSmall {
     font-size: 11px; color: #a39472; text-transform: uppercase;
     letter-spacing: 1.5px; margin-top: 3px; font-family: 'Fraunces', serif;
@@ -404,7 +411,7 @@
 
   <div class="section">
     <div class="doseLabel" id="doseLabel"></div>
-    <input type="range" id="waterSlider" min="200" max="950" step="10" />
+    <input type="range" id="waterSlider" min="200" max="1420" step="10" />
     <div class="statRow" id="statRow"></div>
   </div>
 
@@ -561,11 +568,19 @@
 
 <script>
   var GRINDERS = {
-    smeg:   { label: "Smeg CGF01",      setting: "22",  note: "everyday",          ratio: 16 },
-    kultra: { label: "1Zpresso K-Ultra", setting: "8.7", note: "standard beans",    ratio: 16 },
-    kmax:   { label: "1Zpresso K-Max",   setting: "8.4", note: "fresh & specialty", ratio: 16 }
+    smeg: {
+      label: "Smeg CGF01", ratio: 16,
+      settings: [{ val: "22", note: "everyday" }]
+    },
+    kultra: {
+      label: "1Zpresso K-Ultra", ratio: 16,
+      settings: [
+        { val: "8.7", note: "standard beans" },
+        { val: "8.4", note: "fresh &amp; specialty" }
+      ]
+    }
   };
-  var ORDER = ["smeg", "kultra", "kmax"];
+  var ORDER = ["smeg", "kultra"];
 
   var grinder = "smeg";
   var water = 950;
@@ -601,9 +616,20 @@
       var v = GRINDERS[k];
       var b = document.createElement("button");
       b.className = "grBtn" + (grinder === k ? " active" : "");
-      b.innerHTML = '<div class="grName">' + v.label + '</div>' +
-                    '<div class="grSet">' + v.setting + '</div>' +
-                    '<div class="grNote">' + v.note + '</div>';
+      var body;
+      if (v.settings.length === 1) {
+        body = '<div class="grSet">' + v.settings[0].val + '</div>' +
+               '<div class="grNote">' + v.settings[0].note + '</div>';
+      } else {
+        body = '<div class="grSplit">' + v.settings.map(function (st, i) {
+          return (i ? '<div class="grDiv"></div>' : '') +
+                 '<div class="grHalf">' +
+                   '<div class="grSet">' + st.val + '</div>' +
+                   '<div class="grNote">' + st.note + '</div>' +
+                 '</div>';
+        }).join('') + '</div>';
+      }
+      b.innerHTML = '<div class="grName">' + v.label + '</div>' + body;
       b.onclick = function () { grinder = k; reset(); renderAll(); };
       row.appendChild(b);
     });
@@ -615,21 +641,20 @@
     var oz = (water / 29.5735).toFixed(1);
     var cups = (water / 236.588).toFixed(1);
     document.getElementById("doseLabel").innerHTML =
-    document.getElementById("doseLabel").innerHTML =
       "<b>" + water + " g</b> water &nbsp;&#183;&nbsp; " + d + " g coffee &nbsp;&#183;&nbsp; ~" +
       cups + " 8oz cups (" + oz + " oz)";
     var defs = [
       [water + "g", "water"],
       [d + "g", "coffee"],
       [bloom + "g", "bloom"],
-      [GRINDERS[grinder].setting, "grind"]
+      [GRINDERS[grinder].settings.map(function (st) { return st.val; }).join("/"), "grind"]
     ];
     var sr = document.getElementById("statRow");
     sr.innerHTML = "";
     defs.forEach(function (p) {
       var el = document.createElement("div");
       el.className = "stat";
-      el.innerHTML = '<div class="statBig">' + p[0] + '</div>' +
+      el.innerHTML = '<div class="statBig' + (String(p[0]).indexOf("/") > -1 ? " dual" : "") + '">' + p[0] + '</div>' +
                      '<div class="statSmall">' + p[1] + '</div>';
       sr.appendChild(el);
     });
